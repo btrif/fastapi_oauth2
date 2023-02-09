@@ -5,6 +5,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from fastapi.responses import RedirectResponse
 
+#### Data base part
+
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",
@@ -22,16 +24,19 @@ fake_users_db = {
     },
 }
 
+### Initiate FastApi App
 app = FastAPI()
 
 
+# Method for has password
 def fake_hash_password(password: str):
     return password # + "_fakehashed"
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-
+### MODELS
+# Model for User
 class User(BaseModel):
     username: str
     email: Union[str, None] = None
@@ -43,6 +48,7 @@ class UserInDB(User):
     hashed_password: str
 
 
+### METHODS
 def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
@@ -72,6 +78,9 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
+### END METHODS
+
+### ROUTES
 
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -93,6 +102,9 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 @app.get('/', response_class=RedirectResponse, include_in_schema=False)
 async def docs():
     return RedirectResponse(url='/docs')
+
+
+### END ROUTES
 
 
 if __name__ == "__main__":
