@@ -1,3 +1,5 @@
+#  Created by btrif Trif on 12-02-2023 , 4:53 PM.
+
 from typing import Union
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -30,10 +32,11 @@ app = FastAPI()
 
 # Method for has password
 def fake_hash_password(password: str):
-    return password # + "_fakehashed"
+    return password  # + "_fakehashed"
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 ### MODELS
 # Model for User
@@ -78,6 +81,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
+
 ### END METHODS
 
 ### ROUTES
@@ -99,6 +103,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
+
 @app.get('/', response_class=RedirectResponse, include_in_schema=False)
 async def docs():
     return RedirectResponse(url='/docs')
@@ -110,5 +115,4 @@ async def docs():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("simple_oauth2:app", log_level="info", reload=True, port=8001)
-
+    uvicorn.run("one_file_app_oauth2:app", log_level="info", reload=True, port=8001)
